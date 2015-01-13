@@ -1,7 +1,6 @@
 /*
  * Manage the layout content.
  */
-
 var Layout = {
 	createContainer: function(id, element){
     	var container = document.createElement(element);
@@ -108,7 +107,6 @@ var Layout = {
     },
 
 	createInfoSong : function ( url, num_song, name_song, min, seg, album_name, artist_name, table) {
-		if (table == null) console.log("erorrs");
 		var linia = document.createElement("tr");
 		linia.type = "button";
 		var contingut = document.createElement("td");
@@ -153,7 +151,6 @@ var Layout = {
 		contingut.appendChild(input);
 		linia.appendChild(contingut);
 
-		console.log(linia);
 		table.appendChild(linia);
 	},
 }
@@ -174,21 +171,57 @@ var AJAX = {
 //Per guardar les dades a la BBDD
 var Data = {
 
-	save: function (){
-
+	get: function (id_artista){
+			var xhr = new XMLHttpRequest();
+			xhr.open("PUT","http://api.hipermedia.local/query");
+			xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			xhr.send("SELECT id_artista FROM music WHERE id_artista="+id_artista);
+			xhr.responseText;
 	},
 
-	get: function (){
-
+	save: function (id_artista){
+			var xhr = new XMLHttpRequest();
+			xhr.open("PUT","http://api.hipermedia.local/query");
+			xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			xhr.send("INSERT INTO music VALUES("+id_artista+")");
+			xhr.responseText;
 	},
 }
 
 //Per reproduir les cançons al donar-li al play
+
+var is_playing=false,sound,currentSong;
+
 var Player = {
+
 	playSong : function (url) {
-		console.log("reproduint cançons");
-		audioObject = new Audio(url);
-        audioObject.play();
+
+        if (currentSong != url){  
+
+        	if (sound) sound = false;
+        	if (is_playing){
+        		is_playing = false;
+        		audioObject.pause();  
+        	} 
+        	
+        	audioObject = new Audio(url);
+        	audioObject.play();
+        	sound = true;
+	      	is_playing = true;
+	      	currentSong = url;        
+        }
+
+        else{
+        	if(sound) {
+		        if(is_playing) {
+		            audioObject.pause();
+		            is_playing = false;
+		        } else {
+		            audioObject.play();
+		            is_playing = true;
+		        }
+		    }
+        }
 	}
 }
 
@@ -210,14 +243,13 @@ var MusicRecommender = {
 		if (nomBuscat != ""){
 			switch(number){
 				case 1:
-					console.log("opc opc 1");
-					MusicRecommender.setData(1, "", nomBuscat);
+					MusicRecommender.setData(5, nomBuscat, "", "");
 					break;
 				case 2:
-					MusicRecommender.setData(4, nomBuscat, "");
+					MusicRecommender.setData(4, nomBuscat, "", "");
 					break;
 				case 3:
-					MusicRecommender.setData(3, nomBuscat, "");
+					MusicRecommender.setData(3, nomBuscat, "", "");
 					break;
 			}
 		}
@@ -227,13 +259,10 @@ var MusicRecommender = {
 	setData : function (opc, nomArtista, nomAlbum, album_id) {
 		this.artista_select = nomArtista;
 		this.album_select = nomAlbum;
-		console.log(opc+ " i "+nomArtista + " i "+nomAlbum);
 
 		switch (opc) {
 			//Per mostrar les cançons quan ens fan click a l'àlbum
 			case 1:
-				//var aux = 'https://api.spotify.com/v1/search?q='+nomAlbum+'&type=track';
-				console.log("id "+album_id);
 				var aux = 'https://api.spotify.com/v1/albums/'+album_id+'/tracks';
 				var link = encodeURI(aux);
 				dades = AJAX.request(link);
@@ -262,19 +291,30 @@ var MusicRecommender = {
 	      		console.log(dades);
 	      		if (dades.albums.items.length != 0) {
 	      			MusicRecommender.listAlbum();
-	      		} else alert("Error");
+	      		} else alert("Error. Album not found!!");
 				break;
 				//Per mostrar els artistes quan ens fan click
 			case 4:
 				var aux = 'https://api.spotify.com/v1/search?q='+nomArtista+'&type=artist';
 				var link = encodeURI(aux);
-
-				console.log("holaholaholaholaholaholahoahoalhdoahodoas           link:"+link);
 				dades = AJAX.request(link);
 	      		console.log(dades);
+	      		Data.save(dades.artists.items[0].id);
 	      		if (dades.artists.items.length != 0) {
 					MusicRecommender.listArtist();
-	      		} else alert("Error");
+	      		} else alert("Error. Artist not found!!");
+
+				break;
+			case 5:
+				//var aux = 'https://api.spotify.com/v1/search?q='+nomAlbum+'&type=track';
+				var aux = 'https://api.spotify.com/v1/search?q='+nomArtista+'&type=track';
+				var link = encodeURI(aux);
+				dades = AJAX.request(link);
+	      		console.log(dades);
+	      		if (dades.error != null || dades.tracks.items.length != 0) {
+	      			MusicRecommender.listSongs2();
+	      		} else alert("Error. Song not found!!");
+	      		
 
 				break;
 		}
@@ -297,7 +337,6 @@ var MusicRecommender = {
 				var li = Layout.createContainer("artists_"+i, "li");
 
 				//Creem la figure que contindrà l'input i la imatge
-				console.log(i);
 				if (dades.artists.items[i].images.length == 0){
 						var figure = Layout.createFigureWithImage("default_image.png", "", "button", "the_buttons", dades.artists.items[i].name, 1, "MusicRecommender.setData(3,", dades.artists.items[i].id);	
 				} 
@@ -325,7 +364,6 @@ var MusicRecommender = {
 	},
 
 	listAlbum : function () {
-		console.log("Entra a listAlbum "+this.artista_select);
 		MusicRecommender.deletePreviousData();
 		//Creem la secció on posarem tot el llistat d'artistes
 		this.seccio = Layout.createContainer("llistaAlbums", "section");
@@ -346,8 +384,6 @@ var MusicRecommender = {
 
 			if (i < dades.albums.total){
 				var li = Layout.createContainer("album_"+ i, "li");
-				console.log(i);
-				console.log(dades.albums.items[i].images);
 				if (dades.albums.items[i].images.length == 0){
 					var figure = Layout.createFigureWithImage("default_image.png", "", "button", "the_buttons", dades.albums.items[i].name, 1, "MusicRecommender.setData(1,", dades.albums.items[i].id);
 				} 
@@ -374,7 +410,7 @@ var MusicRecommender = {
 		var art = document.getElementById("llistaArtistes");
 		var song = document.getElementById("llistaCancons");
 		var alb = document.getElementById("llistaAlbums");
-		if (art != null | song != null | alb != null) {
+		if (art != null | song != null | alb != null) {
 			if (art != null) art.parentNode.removeChild(art);
 			if (song != null) song.parentNode.removeChild(song);
 			if (alb != null) alb.parentNode.removeChild(alb);
@@ -382,7 +418,6 @@ var MusicRecommender = {
 	},
 
 	listSongs : function () {
-		console.log("album "+this.album_select);
 		MusicRecommender.deletePreviousData();
 		this.seccio = Layout.createContainer("llistaCancons", "section");
 
@@ -397,20 +432,45 @@ var MusicRecommender = {
 		var i = 0;
 		var table = Layout.createHeaderTable(this.seccio);
 
-		console.log("posat");
+		
 		for (i = 0; i < dades.total; i++) {
-
 			var flag_minut = 1;
 			var time = dades.items[i].duration_ms /1000;
 			var minutes = Math.floor(time / 60);
 			var seconds = time - minutes * 60;
 			seconds = Math.floor(seconds);
-
 			Layout.createInfoSong(dades.items[i].preview_url, dades.items[i].track_number, dades.items[i].name, minutes, seconds ,this.album_select, dades.items[i].artists[0].name, table);
 		}		
 		this.seccio.appendChild(table);
 		document.body.appendChild(this.seccio);
-		
+	},
+
+	listSongs2 : function () {
+		MusicRecommender.deletePreviousData();
+		this.seccio = Layout.createContainer("llistaCancons", "section");
+
+		//Creem el text
+		var opcio = Layout.createText("h2", "Songs");
+		this.seccio.appendChild(opcio);
+
+		var i = 0;
+		var table = Layout.createHeaderTable(this.seccio);
+
+		for (i = 0; i < dades.tracks.total; i++) {
+			if( i<dades.tracks.limit){
+				var flag_minut = 1;
+				var time = dades.tracks.items[i].duration_ms /1000;
+				var minutes = Math.floor(time / 60);
+				var seconds = time - minutes * 60;
+				seconds = Math.floor(seconds);
+				//createInfoSong : function ( url, num_song, name_song, min, seg, album_name, artist_name, table)
+				Layout.createInfoSong(dades.tracks.items[i].preview_url, i+1, dades.tracks.items[i].name, minutes, seconds , dades.tracks.items[i].album.name, dades.tracks.items[i].name, table);
+				
+			}
+		}		
+
+		this.seccio.appendChild(table);
+		document.body.appendChild(this.seccio);
 	},
 
 	main: function (){
@@ -439,8 +499,3 @@ if ($conn->connect_error) {
 } 
 echo "Connected successfully";
 ?>*/
-
-
-
-
-
