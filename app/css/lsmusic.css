@@ -1,0 +1,237 @@
+
+/*Part del buscador */
+form input {
+	font-size: 14px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+img#lupa {
+	width: 3%;
+	margin-left: 3%;
+	margin-top: 2%;
+}
+/*Es fixa la posició del buscador i es centra*/
+#buscador {
+	color: white;
+	background: rgba(0,0,0,0.6);
+	position: fixed;
+	top: 0;
+	z-index: 999;
+	width: 100%;
+}
+#buscador form {
+	margin-top: 1%;
+	margin-left: 12%;
+}
+/*Part dels botons del buscador */
+#buscador button {
+	margin-left: 12%;
+	margin-right: 3%;
+	font-size: 145%;
+	background: none;
+	border: none;
+	color: white;
+	font-family: Arial;
+}
+th{
+	text-align: left;
+}
+#cap{
+	color: white;
+
+}
+input{
+	color: white;
+	background: rgba(0,0,0,0);
+	border: none;
+}
+.info_song{
+	background: rgba(0,0,0,0.6);
+}
+#txt{
+	margin-bottom: 2%;
+	width: 79%;
+	font-size: 137%;
+}
+
+/*Especifiquem la lletra de tots els elements*/
+body {
+	font-family: 'Open Sans', sans-serif;
+	background-attachment: fixed;
+}
+
+/*Per que les imatges dels artistes quedin ajustades*/
+div.show-image, div.show-album,div.show-artist {
+    padding: 13px;
+    vertical-align: middle;
+    display:table-caption;
+
+
+}
+div.show-image:hover, div.show-album:hover,div.show-artist:hover {
+	/*width: 200%;*/	
+	background: #rgba(0,0,0,0.6);
+}
+  
+}
+.show-image input,.show-artist input {
+	position: relative;
+	max-height: 100%;
+	max-width: 100%;
+	width: 200px;
+}
+.show-album input {
+	position: relative;
+	max-height: 100%;
+	max-width: 100%;
+	width: 200px;
+}
+#llistaAlbums ul,#llistaCancons ul, #llistaArtistes ul{
+	display: table-cell;
+}
+li{
+	display: table-cell;
+	position: relative;
+}
+figure{
+	max-width: 100%;
+	max-height: 100%;
+}
+#llistaCancons, #llistaArtistes {
+	
+	max-width: 100%;
+	margin-top: 12%;
+	max-height: 100%;
+	
+}
+/*Per que al passar el mouse per sobre la imatge aparegui el nom del cantant*/
+div.show-image:hover figure input {
+	
+}
+
+div.show-image figure input,div.show-album figure input,div.show-artist figure input {
+	
+	
+	font-size: 1em;
+	color: white;
+	background: rgba(0,0,0,0.6);
+}
+
+/*Un cop ens han apretat l'artista i mostrem les cançons*/
+#songs li {
+	color: white;
+	background: rgba(0,0,0,0.6);
+	margin-left: 4%;
+	margin-right: 7%;
+	margin-top: 0%;
+	margin-bottom: 6%;
+	width: 37%;
+}
+input#song, #empty_icon {
+	margin-right: 3%;
+	float: right;
+	margin-top: 0%;
+	width: 34%;
+	margin-bottom: 10%;
+}
+input#empty_icon {
+	background-color: white;
+	width: 34%;
+}
+/*ul {
+	margin-left: 12%;
+}*/
+/*Fem que el play es mostri sobre la imatge de la cançó*/
+.play {
+	width: 4%;
+	position: absolute;
+	margin-left: 18%;
+	margin-top: 2%;
+}
+
+/*Fem que la informació de la cançó es mostri bé*/
+p {margin-left: 4%; margin-top: 12%;}
+
+/*Fem que el titol sigui blanc*/
+h2 {
+	color: white;
+	font-size: 2.5em;
+	margin-left: 95px;
+	margin-top: 140px;
+}
+
+.info_song {
+	max-height: 100%;
+	max-width: 100%;
+	width: 100%;
+}
+
+/*Per reajustar el tamany dels objectes/imatges quan es miri al mòbil*/
+@media (max-width: 650px) {
+	#buscador {
+		margin-top: 6%;
+	}
+	#llistaCancons h2, #llistaArtistes h2, #llistaAlbums h2{
+		position: fixed;
+		margin-top: -7%;
+
+	}
+	img#lupa {
+		width: 6%;
+	}
+
+	/*Reajustar els botons del buscador*/
+	#buscador button {
+		margin-left: 4%;
+		margin-right: 8%;
+		font-size: 89%;
+	}
+
+	/*Per fer les imatges més petites i que es vegin centrades en la pantalla però només 1*/
+	#llistaCancons , #llistaArtistes, #llistaAlbums{
+		margin-left: 7%;
+		margin-top: 35%%;
+		width: 48%;
+	}
+	 ul{
+		display: block;
+	}
+
+
+	/*Per que la info de l'artista sempre es mostri per pantalla*/
+	div.show-image input,div.show-album input {
+		display:block;
+		font-size: 2em;
+	}
+	
+
+	/*Que la informació de la canço i la imatge es mostri més gran*/
+	#songs li {
+		margin-left: 26%;
+		margin-right: 2%;
+		margin-bottom: 6%;
+		width: 124%;
+	}
+	input#song, #empty_icon {
+		margin-right: 3%;
+		margin-top: 0%;
+		width: 34%;
+		margin-bottom: 10%;
+	}
+	input#empty_icon {
+		width: 34%;
+	}
+
+	/*Fem que el play es mostri sobre la imatge de la cançó*/
+	#play {
+		margin-left: 33%;
+		margin-top: 4%;
+		width: 7%;
+	}
+
+	/*Fem que el títol quedi centrat*/
+	h2 {
+		margin-left: 23%;
+		margin-right: -16%;
+	}
+}
